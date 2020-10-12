@@ -67,7 +67,7 @@ public class SocialSiteController {
 		return siteService.deleteComment(cmtId);
 	}
 	
-	//get all post for user
+	//get all posts for users in app 
 	@GetMapping("/getallpostforuser/{userId}")
 	public List<PostWithComment> getAllPostByUser(@PathVariable("userId") Integer userId){
 		
