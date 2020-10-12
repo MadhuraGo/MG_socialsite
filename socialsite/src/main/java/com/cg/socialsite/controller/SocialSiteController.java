@@ -41,7 +41,7 @@ public class SocialSiteController {
 		return siteService.createPost(post);
 	}
 	
-	//make new comment
+	//make new comment on existing post
 	@PostMapping("/createcomment")
 	public Comment createComment(@RequestBody CommentDto commentdto) {
 		
