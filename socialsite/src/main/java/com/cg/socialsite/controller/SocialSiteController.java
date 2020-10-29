@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,8 @@ public class SocialSiteController {
 	SocialSiteService siteService;
 	
 	//createpost
-	@PostMapping("/createpost")
+	@Secured("ROLE_PROFILE_OWNER")
+	@PostMapping("/owner/createpost")
 	public Post createPost(@RequestBody PostWithComment postdto) {
 		
 		Post post =new Post();
@@ -42,6 +44,7 @@ public class SocialSiteController {
 	}
 	
 	//make new comment on existing post
+	@Secured("ROLE_USER")
 	@PostMapping("/createcomment")
 	public Comment createComment(@RequestBody CommentDto commentdto) {
 		
@@ -56,8 +59,13 @@ public class SocialSiteController {
 	}
 	
 	//delete post
-	@DeleteMapping("/deletepost/{postId}")
+	@DeleteMapping("/owner/deletepost/{postId}")
 	public Integer deletePost(@PathVariable("postId") Integer postId) {
+		
+		List<CommentDto> cmts=siteService.getAllCommentsByPost(siteService.getPostbyId(postId));
+		cmts.forEach((cmt)->{
+			siteService.deleteComment(cmt.getCommentId());
+		});
 		return siteService.deletePost(postId);
 	}
 	
@@ -68,7 +76,7 @@ public class SocialSiteController {
 	}
 	
 	//get all posts for users in app 
-	@GetMapping("/getallpostforuser/{userId}")
+	@GetMapping("/owner/getallpostforuser/{userId}")
 	public List<PostWithComment> getAllPostByUser(@PathVariable("userId") Integer userId){
 		
 		List<Post> posts=siteService.getAllPostsByUserId(userId);
@@ -90,8 +98,6 @@ public class SocialSiteController {
 	
 	
 	//get all comments for post
-	
-	
 	@GetMapping("/getpostwithallcomments/{postId}")
 	public PostWithComment getallcmtforPost(@PathVariable("postId") Integer postId){
 		
@@ -119,7 +125,7 @@ public class SocialSiteController {
 		    Integer  id=post.getPostId();
 		    publicposts.add(this.getallcmtforPost(id));
 		      
-		    });
+		   });
 		
 		return publicposts;
 	}
